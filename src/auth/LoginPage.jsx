@@ -60,13 +60,22 @@ export default function LoginPage() {
             label="ID"
             fullWidth
             required
+            type="text"
+            value={id}
             variant="standard"
             sx={{ marginBottom: "30px" }}
+            onChange={(e) => {
+              setId(e.target.value);
+            }}
           />
           <LoginInput
             required
             fullWidth
             label="Password"
+            value={pwd}
+            onChange={(e) => {
+              setPwd(e.target.value);
+            }}
             variant="standard"
             sx={{ marginBottom: "50px" }}
           />
