@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
 const Altitude = () => {
@@ -7,14 +7,11 @@ const Altitude = () => {
   const [flag, setFlag] = useState(false);
 
   const updateData = (flag) => {
-    console.log(flag);
-    if (flag) {
-      console.log(1);
-      setData([150, 150]);
-    } else {
-      console.log(2);
-      setData([10, 10]);
-    }
+    const minValue = 0;
+    const maxValue = 350;
+    const newVal =
+      Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+    setData([newVal, newVal]);
   };
 
   useEffect(() => {
@@ -32,51 +29,37 @@ const Altitude = () => {
       .x((d, i) => i * (window.innerWidth / (data.length - 1)))
       .y((d) => yScale(d));
 
-    // Remove existing line
+    // // Remove existing line
+    // svg.select(".line-path").remove(); // 셀렉할 때 .을 클래스 이름 앞에 붙여야함
 
-    // Draw new line chart
+    // Draw or update the y-axis
 
-    svg
-      .append("path")
-      .datum(data)
-      .attr("class", "line-path")
-      .attr("d", line)
-      .attr("stroke", "none")
-      .attr("fill", "none");
-  }, []);
-
-  useEffect(() => {
-    const svg = d3.select(chartRef.current);
-
-    // Set up scales
-    const yScale = d3
-      .scaleLinear()
-      .domain([0, 350])
-      .range([window.innerHeight, 0]);
-
-    // Set up line
-    const line = d3
-      .line()
-      .x((d, i) => i * (window.innerWidth / (data.length - 1)))
-      .y((d) => yScale(d));
-
-    // Remove existing line
-    svg.select(".line-path").remove(); // 셀렉할 때 .을 클래스 이름 앞에 붙여야함
-
-    // Draw new line chart
-    let color = "black";
-    if (flag) {
-      color = "red";
+    let yAxis = svg.select(".y-axis");
+    if (yAxis.empty()) {
+      yAxis = svg.append("g").attr("class", "y-axis");
     }
+    yAxis
+      .call(d3.axisLeft(yScale).tickValues([100, 200, 300]).tickSize(0))
+      .style("font-size", "16px");
+    yAxis.attr("transform", "translate(40,0)"); // adjust the position as needed
 
-    svg
-      .append("path")
-      .datum(data)
-      .attr("class", "line-path")
-      .attr("d", line)
-      .attr("stroke", color)
-      .attr("stroke-width", 5)
-      .attr("fill", "none");
+    // Draw new line chart
+    // Select the existing path element
+    const path = svg.select(".line-path");
+
+    // If the path element doesn't exist yet, create it
+    if (path.empty()) {
+      svg
+        .append("path")
+        .datum(data)
+        .attr("class", "line-path")
+        .attr("stroke-width", 5)
+        .attr("stroke", "red")
+        .attr("fill", "none");
+    } else {
+      // Animate the path element to the new data points
+      path.datum(data).transition().duration(2000).attr("d", line);
+    }
   }, [data]);
 
   useEffect(() => {
