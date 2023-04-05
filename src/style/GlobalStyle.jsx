@@ -53,9 +53,12 @@ body{
 }
 html{
     height: 100%;
-    background-color: #cec9c9;
+    background-color: #223156;
+    color:#8f8f8c;
     --color-text: black;
     --color-gray:#747272;
+    --color-background: #223156: 
+    --color-text :#8f8f8c; 
     
     --weight-point:900;
     

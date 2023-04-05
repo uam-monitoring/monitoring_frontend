@@ -7,8 +7,8 @@ const Altitude = () => {
   const [flag, setFlag] = useState(false);
 
   const updateData = (flag) => {
-    const minValue = 0;
-    const maxValue = 350;
+    const minValue = 100;
+    const maxValue = 220;
     const newVal =
       Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
     setData([newVal, newVal]);
@@ -53,12 +53,24 @@ const Altitude = () => {
         .append("path")
         .datum(data)
         .attr("class", "line-path")
-        .attr("stroke-width", 5)
-        .attr("stroke", "red")
+        .attr("id", "line-path")
+        .attr("stroke-width", 10)
+        .attr("stroke", "#8f8f8c")
         .attr("fill", "none");
+      // Add a text element with a textPath that references the path
+      svg
+        .append("text")
+        .append("textPath")
+        .attr("href", "#line-path") // the ID of the path element
+        .attr("startOffset", "5%")
+        .attr("text-anchor", "start")
+        .attr("font-size", "1rem")
+        .attr("fill", "#ffffff")
+        .attr("dy", "30px")
+        .text("UAM 123");
     } else {
       // Animate the path element to the new data points
-      path.datum(data).transition().duration(2000).attr("d", line);
+      path.datum(data).transition().duration(1000).attr("d", line);
     }
   }, [data]);
 
