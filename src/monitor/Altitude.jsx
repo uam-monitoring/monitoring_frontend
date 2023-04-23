@@ -14,26 +14,12 @@ const Altitude = () => {
     setData([newVal, newVal]);
   };
 
-  useEffect(() => {
+  const makeCanvas = () => {
     const svg = d3.select(chartRef.current);
-
-    // Set up scales
     const yScale = d3
       .scaleLinear()
       .domain([0, 350])
       .range([window.innerHeight, 0]);
-
-    // Set up line
-    const line = d3
-      .line()
-      .x((d, i) => i * (window.innerWidth / (data.length - 1)))
-      .y((d) => yScale(d));
-
-    // // Remove existing line
-    // svg.select(".line-path").remove(); // 셀렉할 때 .을 클래스 이름 앞에 붙여야함
-
-    // Draw or update the y-axis
-
     let yAxis = svg.select(".y-axis");
     if (yAxis.empty()) {
       yAxis = svg.append("g").attr("class", "y-axis");
@@ -41,23 +27,32 @@ const Altitude = () => {
     yAxis
       .call(d3.axisLeft(yScale).tickValues([100, 200, 300]).tickSize(0))
       .style("font-size", "16px");
-    yAxis.attr("transform", "translate(40,0)"); // adjust the position as needed
+    yAxis.attr("transform", "translate(40,0)"); // y축 생성
+  };
 
-    // Draw new line chart
-    // Select the existing path element
+  const makeUamAltitudeLine = () => {
+    const svg = d3.select(chartRef.current);
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, 350])
+      .range([window.innerHeight, 0]);
+    const line = d3
+      .line()
+      .x((d, i) => i * (window.innerWidth / (data.length - 1)))
+      .y((d) => yScale(d));
+
     const path = svg.select(".line-path");
-
-    // If the path element doesn't exist yet, create it
+    // 패스가 없으면 일단 생성
     if (path.empty()) {
       svg
         .append("path")
         .datum(data)
         .attr("class", "line-path")
         .attr("id", "line-path")
-        .attr("stroke-width", 10)
+        .attr("stroke-width", 5)
         .attr("stroke", "#8f8f8c")
         .attr("fill", "none");
-      // Add a text element with a textPath that references the path
+      // 텍스트 생성
       svg
         .append("text")
         .append("textPath")
@@ -69,11 +64,16 @@ const Altitude = () => {
         .attr("dy", "30px")
         .text("UAM 123");
     } else {
-      // Animate the path element to the new data points
-      // path.datum(data).transition().duration(1000).attr("d", line);
+      // 이동
       path.datum(data).attr("d", line);
     }
+  };
+
+  useEffect(() => {
+    makeUamAltitudeLine();
   }, [data]);
+
+  useEffect(makeCanvas, []);
 
   useEffect(() => {
     const interval = setInterval(() => {

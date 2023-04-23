@@ -23,13 +23,37 @@ const Path = () => {
     ]);
   };
 
-  const drawChart = () => {
+  const drawVertport = () => {
     const svg = d3.select(svgRef.current);
-    const width = +svg.attr("width");
-    const height = +svg.attr("height");
+    // Define the circle data with coordinates (50, 50)
+    const circle1Data = [{ x: 50, y: 50 }];
+    // Define the circle data with coordinates (900, 900)
+    const circle2Data = [{ x: 990, y: 700 }];
+    // Create a group element for the circles
+    const circlesGroup = svg.append("g");
+    // Add the first circle to the group
 
+    circlesGroup
+      .append("rect")
+      .attr("x", circle1Data[0].x - 10)
+      .attr("y", circle1Data[0].y - 10)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "red");
+    circlesGroup
+      .append("rect")
+      .attr("x", circle2Data[0].x - 10)
+      .attr("y", circle2Data[0].y - 10)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "red");
+  };
+
+  const drawUamPath = () => {
+    const svg = d3.select(svgRef.current);
+    const width = svg.attr("width");
+    const height = svg.attr("height");
     const xScale = d3.scaleLinear().domain([0, 1000]).range([0, width]);
-
     const yScale = d3.scaleLinear().domain([0, 1000]).range([0, height]);
     const line = d3
       .line()
@@ -53,43 +77,30 @@ const Path = () => {
         .attr("stroke-dashoffset", 0)
         .attr("stroke-width", 2)
         .attr("d", line);
-      // .transition()
-      // .duration(500)
-      // .ease(d3.easeLinear);
     } else {
-      path
-        .datum(data)
-        // .transition()
-        // .duration(500)
-        // .ease(d3.easeLinear)
-        .attr("d", line);
+      path.datum(data).attr("d", line);
     }
 
-    const rect = svg.select(".path-rect");
-    if (rect.empty()) {
+    const circle = svg.select(".path-circle");
+    if (circle.empty()) {
       svg
-        .append("rect")
-        .attr("class", "path-rect")
-        .attr("x", data[data.length - 1].x - 5)
-        .attr("y", data[data.length - 1].y - 5)
-        .attr("width", "1rem")
-        .attr("height", "1rem")
+        .append("circle")
+        .attr("class", "path-circle")
+        .attr("cx", xScale(data[data.length - 1].x))
+        .attr("cy", yScale(data[data.length - 1].y))
+        .attr("r", 10)
         .attr("fill", "#8f8f8c");
     } else {
-      rect
-        // .transition()
-        // .duration(500)
-        // .ease(d3.easeLinear)
-        .attr("x", x - 5)
-        .attr("y", y - 5);
+      circle.attr("cx", x).attr("cy", y);
     }
   };
-  console.log(data);
+
   useEffect(() => {
-    drawChart();
+    drawUamPath();
   }, [data]);
 
   useEffect(() => {
+    drawVertport();
     const interval = setInterval(() => {
       updateData();
     }, 1000);
@@ -101,7 +112,7 @@ const Path = () => {
       ref={svgRef}
       width={window.innerWidth * 0.85}
       height={window.innerHeight}
-    ></svg>
+    />
   );
 };
 
