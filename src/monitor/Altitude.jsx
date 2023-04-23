@@ -30,7 +30,7 @@ const Altitude = () => {
     yAxis.attr("transform", "translate(40,0)"); // y축 생성
   };
 
-  const makeUamAltitudeLine = () => {
+  const makeUamAltitudeLine = (data, color) => {
     const svg = d3.select(chartRef.current);
     const yScale = d3
       .scaleLinear()
@@ -41,36 +41,24 @@ const Altitude = () => {
       .x((d, i) => i * (window.innerWidth / (data.length - 1)))
       .y((d) => yScale(d));
 
-    const path = svg.select(".line-path");
-    // 패스가 없으면 일단 생성
+    const path = svg.select(".line-path-" + color);
+    // Path does not exist yet
     if (path.empty()) {
       svg
         .append("path")
         .datum(data)
-        .attr("class", "line-path")
-        .attr("id", "line-path")
+        .attr("class", "line-path-" + color)
+        .attr("id", "line-path-" + color)
         .attr("stroke-width", 5)
-        .attr("stroke", "#8f8f8c")
+        .attr("stroke", color)
         .attr("fill", "none");
-      // 텍스트 생성
-      svg
-        .append("text")
-        .append("textPath")
-        .attr("href", "#line-path") // the ID of the path element
-        .attr("startOffset", "5%")
-        .attr("text-anchor", "start")
-        .attr("font-size", "1rem")
-        .attr("fill", "#ffffff")
-        .attr("dy", "30px")
-        .text("UAM 123");
     } else {
-      // 이동
       path.datum(data).attr("d", line);
     }
   };
 
   useEffect(() => {
-    makeUamAltitudeLine();
+    makeUamAltitudeLine(data, "red");
   }, [data]);
 
   useEffect(makeCanvas, []);

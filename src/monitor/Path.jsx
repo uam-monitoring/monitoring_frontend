@@ -81,17 +81,17 @@ const Path = () => {
       path.datum(data).attr("d", line);
     }
 
-    const circle = svg.select(".path-circle");
-    if (circle.empty()) {
+    const uamInfo = svg.select(".path-uamInfo");
+    if (uamInfo.empty()) {
       svg
         .append("circle")
-        .attr("class", "path-circle")
+        .attr("class", "path-uamInfo")
         .attr("cx", xScale(data[data.length - 1].x))
         .attr("cy", yScale(data[data.length - 1].y))
         .attr("r", 10)
         .attr("fill", "#8f8f8c");
     } else {
-      circle.attr("cx", x).attr("cy", y);
+      uamInfo.attr("cx", x).attr("cy", y);
     }
   };
 
