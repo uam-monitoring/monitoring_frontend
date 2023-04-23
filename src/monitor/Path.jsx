@@ -52,16 +52,16 @@ const Path = () => {
         .attr("stroke-dasharray", "5,5")
         .attr("stroke-dashoffset", 0)
         .attr("stroke-width", 2)
-        .attr("d", line)
-        .transition()
-        .duration(500)
-        .ease(d3.easeLinear);
+        .attr("d", line);
+      // .transition()
+      // .duration(500)
+      // .ease(d3.easeLinear);
     } else {
       path
         .datum(data)
-        .transition()
-        .duration(500)
-        .ease(d3.easeLinear)
+        // .transition()
+        // .duration(500)
+        // .ease(d3.easeLinear)
         .attr("d", line);
     }
 
@@ -77,9 +77,9 @@ const Path = () => {
         .attr("fill", "#8f8f8c");
     } else {
       rect
-        .transition()
-        .duration(500)
-        .ease(d3.easeLinear)
+        // .transition()
+        // .duration(500)
+        // .ease(d3.easeLinear)
         .attr("x", x - 5)
         .attr("y", y - 5);
     }

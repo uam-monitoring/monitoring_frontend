@@ -70,7 +70,8 @@ const Altitude = () => {
         .text("UAM 123");
     } else {
       // Animate the path element to the new data points
-      path.datum(data).transition().duration(1000).attr("d", line);
+      // path.datum(data).transition().duration(1000).attr("d", line);
+      path.datum(data).attr("d", line);
     }
   }, [data]);
 
