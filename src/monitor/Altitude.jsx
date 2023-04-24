@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
-const Altitude = () => {
+const Altitude = (uamData) => {
   const chartRef = useRef(null);
   const [data, setData] = useState([120, 120]);
   const [flag, setFlag] = useState(false);
@@ -41,17 +41,28 @@ const Altitude = () => {
       .x((d, i) => i * (window.innerWidth / (data.length - 1)))
       .y((d) => yScale(d));
 
-    const path = svg.select(".line-path-" + color);
+    const path = svg.select(".line-path-" + uamData?.id);
     // Path does not exist yet
     if (path.empty()) {
       svg
         .append("path")
         .datum(data)
-        .attr("class", "line-path-" + color)
-        .attr("id", "line-path-" + color)
+        .attr("class", "line-path-" + uamData?.id)
+        .attr("id", "line-path-" + uamData?.id)
         .attr("stroke-width", 5)
         .attr("stroke", color)
         .attr("fill", "none");
+      // 텍스트 생성
+      svg
+        .append("text")
+        .append("textPath")
+        .attr("href", "#line-path-" + uamData?.id) // the ID of the path element
+        .attr("startOffset", "5%")
+        .attr("text-anchor", "start")
+        .attr("font-size", "1rem")
+        .attr("fill", "#ffffff")
+        .attr("dy", "30px")
+        .text("UAM 123");
     } else {
       path.datum(data).attr("d", line);
     }
