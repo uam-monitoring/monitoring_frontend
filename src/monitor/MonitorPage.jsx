@@ -22,7 +22,16 @@ const RouteContainer = styled.div`
 
 export default function MonitorPage() {
   //소켓통신을 시작한다
-
+  const uamData = [
+    {
+      id: 123123,
+      color: "#804932",
+    },
+    {
+      id: 123125,
+      color: "#899232",
+    },
+  ];
   const colorPlusModel = () => {
     // 각 함수에서 색상을 정한다.
     const r = Math.floor(Math.random() * 256);
@@ -36,10 +45,10 @@ export default function MonitorPage() {
   return (
     <MonitorContainer>
       <AltitudeContainer>
-        <Altitude />
+        <Altitude uamData={uamData} />
       </AltitudeContainer>
       <RouteContainer>
-        <Path />
+        <Path uamData={uamData} />
       </RouteContainer>
     </MonitorContainer>
   );

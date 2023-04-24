@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
-const Altitude = (uamData) => {
+const Altitude = ({ uamData }) => {
   const chartRef = useRef(null);
   const [data, setData] = useState([120, 120]);
   const [flag, setFlag] = useState(false);
 
   const updateData = (flag) => {
-    const minValue = 100;
+    const minValue = 200;
     const maxValue = 220;
     const newVal =
       Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
@@ -42,7 +42,7 @@ const Altitude = (uamData) => {
       .y((d) => yScale(d));
 
     const path = svg.select(".line-path-" + uamData?.id);
-    // Path does not exist yet
+
     if (path.empty()) {
       svg
         .append("path")
@@ -52,7 +52,6 @@ const Altitude = (uamData) => {
         .attr("stroke-width", 5)
         .attr("stroke", color)
         .attr("fill", "none");
-      // 텍스트 생성
       svg
         .append("text")
         .append("textPath")
@@ -69,7 +68,7 @@ const Altitude = (uamData) => {
   };
 
   useEffect(() => {
-    makeUamAltitudeLine(data, "red");
+    makeUamAltitudeLine(data, uamData?.color);
   }, [data]);
 
   useEffect(makeCanvas, []);
