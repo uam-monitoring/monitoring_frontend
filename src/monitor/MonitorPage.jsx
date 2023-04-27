@@ -7,6 +7,7 @@ const MonitorContainer = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: 15% 85%;
+  overflow: hidden;
 `;
 
 const AltitudeContainer = styled.div`
@@ -21,15 +22,10 @@ const RouteContainer = styled.div`
 `;
 
 export default function MonitorPage() {
-  //소켓통신을 시작한다
   const uamData = [
     {
       id: 123123,
       color: "#804932",
-    },
-    {
-      id: 123125,
-      color: "#899232",
     },
   ];
   const colorPlusModel = () => {

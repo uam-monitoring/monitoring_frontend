@@ -31,6 +31,7 @@ const Altitude = ({ uamData }) => {
   };
 
   const makeUamAltitudeLine = (data, color) => {
+    console.log(color);
     const svg = d3.select(chartRef.current);
     const yScale = d3
       .scaleLinear()
@@ -68,7 +69,9 @@ const Altitude = ({ uamData }) => {
   };
 
   useEffect(() => {
-    makeUamAltitudeLine(data, uamData?.color);
+    uamData?.map((uam) => {
+      makeUamAltitudeLine(data, uam?.color);
+    });
   }, [data]);
 
   useEffect(makeCanvas, []);
