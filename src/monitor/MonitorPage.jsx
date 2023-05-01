@@ -21,22 +21,23 @@ const RouteContainer = styled.div`
   height: 100%;
 `;
 
+const COLOR_HEIGHT = {
+  FIRST: "",
+  SECOND: "",
+  THIRD: "",
+  FOURTH: "",
+  FIFTH: "",
+  SIXTH: "",
+  SEVENTH: "",
+};
+
 export default function MonitorPage() {
   const uamData = [
     {
       id: 123123,
-      color: "#804932",
+      color: "#ff0202",
     },
   ];
-  const colorPlusModel = () => {
-    // 각 함수에서 색상을 정한다.
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    const a = Math.random(); // alpha component can be any value between 0 and 1
-    const color = `rgba(${r}, ${g}, ${b}, ${a})`;
-    //object를 순회하며 color를 넣는다.
-  };
 
   return (
     <MonitorContainer>

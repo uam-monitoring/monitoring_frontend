@@ -18,24 +18,28 @@ const Altitude = ({ uamData }) => {
     const svg = d3.select(chartRef.current);
     const yScale = d3
       .scaleLinear()
-      .domain([0, 350])
+      .domain([0, 600])
       .range([window.innerHeight, 0]);
     let yAxis = svg.select(".y-axis");
     if (yAxis.empty()) {
       yAxis = svg.append("g").attr("class", "y-axis");
     }
     yAxis
-      .call(d3.axisLeft(yScale).tickValues([100, 200, 300]).tickSize(0))
+      .call(
+        d3
+          .axisLeft(yScale)
+          .tickValues([0, 100, 200, 300, 400, 500, 600])
+          .tickSize(0)
+      )
       .style("font-size", "16px");
     yAxis.attr("transform", "translate(40,0)"); // y축 생성
   };
 
   const makeUamAltitudeLine = (data, color) => {
-    console.log(color);
     const svg = d3.select(chartRef.current);
     const yScale = d3
       .scaleLinear()
-      .domain([0, 350])
+      .domain([0, 600])
       .range([window.innerHeight, 0]);
     const line = d3
       .line()

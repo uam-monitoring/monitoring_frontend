@@ -6,6 +6,7 @@ const HOVER_INFO_X = 10;
 
 const Path = ({ uamData }) => {
   const svgRef = useRef(null);
+  const [scale, setScale] = useState();
   const [data, setData] = useState([{ x: 50, y: 50 }]);
 
   const updateData = () => {
@@ -49,18 +50,34 @@ const Path = ({ uamData }) => {
       .attr("width", 20)
       .attr("height", 20)
       .attr("fill", grayColor);
+    return { xScale, yScale };
+  };
+
+  const drawZoom = () => {
+    const svg = d3.select(svgRef.current);
+    const width = svg.attr("width");
+    const height = svg.attr("height");
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 5])
+      .translateExtent([
+        [-width * 0.3, -height * 0.3],
+        [width * 1.3, height * 1.3],
+      ])
+      .on("zoom", zoomed);
+    svg.call(zoom);
+    function zoomed(event) {
+      const { transform } = event;
+      svg.attr("transform", transform);
+    }
   };
 
   const drawUamPath = () => {
     const svg = d3.select(svgRef.current);
-    const width = svg.attr("width");
-    const height = svg.attr("height");
-    const xScale = d3.scaleLinear().domain([0, 1000]).range([0, width]);
-    const yScale = d3.scaleLinear().domain([0, 1000]).range([0, height]);
     const line = d3
       .line()
-      .x((d) => xScale(d.x))
-      .y((d) => yScale(d.y))
+      .x((d) => scale.xScale(d.x))
+      .y((d) => scale.yScale(d.y))
       .curve(d3.curveBasis);
 
     uamData?.map((info) => {
@@ -75,9 +92,15 @@ const Path = ({ uamData }) => {
           .attr("stroke-dasharray", "5,5")
           .attr("stroke-dashoffset", 0)
           .attr("stroke-width", 2)
-          .attr("d", line);
+          .attr(
+            "d",
+            line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // yScale 적용
+          );
       } else {
-        path.datum(data).attr("d", line);
+        path.datum(data).attr(
+          "d",
+          line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // yScale 적용
+        );
       }
 
       const uamInfo = svg.select(".path-uamInfo" + info?.id);
@@ -85,16 +108,16 @@ const Path = ({ uamData }) => {
         svg
           .append("circle")
           .attr("class", "path-uamInfo" + info?.id)
-          .attr("cx", xScale(data[data.length - 1].x))
-          .attr("cy", yScale(data[data.length - 1].y))
-          .attr("r", 15)
+          .attr("cx", scale.xScale(data[data.length - 1].x))
+          .attr("cy", scale.yScale(data[data.length - 1].y))
+          .attr("r", 5)
           .attr("fill", info?.color)
           .on("mouseover", function () {
             svg
               .append("text")
               .attr("class", "path-uamInfoHover" + info?.id)
-              .attr("x", xScale(HOVER_INFO_X))
-              .attr("y", yScale(HOVER_INFO_Y))
+              .attr("x", scale.xScale(HOVER_INFO_X))
+              .attr("y", scale.yScale(HOVER_INFO_Y))
               .attr("fill", "white")
               .text(`ID: ${info?.id} Longitude: Latitude: Altitude: `);
           })
@@ -103,18 +126,31 @@ const Path = ({ uamData }) => {
           });
       } else {
         uamInfo
-          .attr("cx", xScale(data[data.length - 1].x))
-          .attr("cy", yScale(data[data.length - 1].y));
+          .attr("cx", scale.xScale(data[data.length - 1].x))
+          .attr("cy", scale.yScale(data[data.length - 1].y));
       }
     });
   };
 
+  const resetZoom = () => {
+    const svg = d3.select(svgRef.current);
+    svg.attr("transform", d3.zoomIdentity);
+  };
+
   useEffect(() => {
-    drawUamPath();
+    if (scale) {
+      drawUamPath();
+    }
   }, [data]);
 
   useEffect(() => {
-    drawVertport();
+    document.addEventListener("keydown", (event) => {
+      if (event.keyCode === 82) {
+        resetZoom();
+      }
+    });
+    setScale(drawVertport());
+    drawZoom();
     const interval = setInterval(() => {
       updateData();
     }, 1000);
