@@ -124,10 +124,21 @@ const Path = ({ uamData }) => {
           .on("mouseout", function () {
             svg.selectAll(".path-uamInfoHover" + info?.id).remove();
           });
+        svg
+          .append("text")
+          .text(info?.id)
+          .attr("class", "path-uamInfoText" + info?.id)
+          .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
+          .attr("y", scale.yScale(data[data.length - 1].y) - 10) // circle 위치에서 y값 - 10
+          .attr("fill", "black");
       } else {
         uamInfo
           .attr("cx", scale.xScale(data[data.length - 1].x))
           .attr("cy", scale.yScale(data[data.length - 1].y));
+        svg
+          .select(".path-uamInfoText" + info?.id)
+          .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
+          .attr("y", scale.yScale(data[data.length - 1].y) - 10);
       }
     });
   };
