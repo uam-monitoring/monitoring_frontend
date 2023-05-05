@@ -27,29 +27,22 @@ const Path = ({ uamData }) => {
     ]);
   };
 
-  const drawVertport = () => {
+  const drawVertport = (vertPosition) => {
     const svg = d3.select(svgRef.current);
-    const vert1Data = [{ x: 45, y: 45 }];
-    const vert2Data = [{ x: 900, y: 700 }];
     const vertGroup = svg.append("g");
     const width = svg.attr("width");
     const height = svg.attr("height");
     const xScale = d3.scaleLinear().domain([0, 1000]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, 1000]).range([0, height]);
-    vertGroup
-      .append("rect")
-      .attr("x", xScale(vert1Data[0].x))
-      .attr("y", yScale(vert1Data[0].x))
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", grayColor);
-    vertGroup
-      .append("rect")
-      .attr("x", xScale(vert2Data[0].x))
-      .attr("y", yScale(vert2Data[0].x))
-      .attr("width", 20)
-      .attr("height", 20)
-      .attr("fill", grayColor);
+    vertPosition.map((vertport) => {
+      vertGroup
+        .append("rect")
+        .attr("x", xScale(vertport.x))
+        .attr("y", yScale(vertport.y))
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("fill", grayColor);
+    });
     return { xScale, yScale };
   };
 
@@ -160,7 +153,12 @@ const Path = ({ uamData }) => {
         resetZoom();
       }
     });
-    setScale(drawVertport());
+    setScale(
+      drawVertport([
+        { x: 45, y: 45 },
+        { x: 900, y: 700 },
+      ])
+    );
     drawZoom();
     const interval = setInterval(() => {
       updateData();
