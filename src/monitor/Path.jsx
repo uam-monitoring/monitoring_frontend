@@ -8,7 +8,12 @@ const Path = ({ uamData }) => {
   const svgRef = useRef(null);
   const [scale, setScale] = useState();
   const [data, setData] = useState([{ x: 50, y: 50 }]);
-
+  const STATIC_PREDICT = [
+    { x: 50, y: 50 },
+    { x: 70, y: 70 },
+    { x: 90, y: 90 },
+    { x: 500, y: 270 },
+  ];
   const updateData = () => {
     const minValue = 0;
     const maxValue = 10;
@@ -87,12 +92,31 @@ const Path = ({ uamData }) => {
           .attr("stroke-width", 2)
           .attr(
             "d",
-            line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // yScale 적용
-          );
+            line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // apply yScale
+          )
+          .on("mouseover", function () {
+            svg
+              .append("path")
+              .datum(STATIC_PREDICT)
+              .attr("fill", "none")
+              .attr("stroke", "steelblue")
+              .attr("stroke-width", 2)
+              .attr(
+                "d",
+                d3
+                  .line()
+                  .x((d) => scale.xScale(d.x))
+                  .y((d) => scale.yScale(d.y))
+                  .curve(d3.curveCardinal)
+              );
+          })
+          .on("mouseout", function () {
+            svg.selectAll(".Path-UamPredictLine" + info?.id).remove();
+          });
       } else {
         path.datum(data).attr(
           "d",
-          line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // yScale 적용
+          line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // apply yScale
         );
       }
 
@@ -138,11 +162,10 @@ const Path = ({ uamData }) => {
 
   const resetZoom = () => {
     const svg = d3.select(svgRef.current);
-    svg.call(d3.zoom().on("zoom", null));
     svg.attr("transform", d3.zoomIdentity);
+    svg.call(d3.zoom().on("zoom", null));
     const zoom = d3.zoom().on("zoom", null);
-    const initialTransform = d3.zoomIdentity;
-    svg.call(zoom.transform, initialTransform);
+    svg.call(zoom.transform, d3.zoomIdentity);
     svg.call(zoom);
     drawZoom();
   };
