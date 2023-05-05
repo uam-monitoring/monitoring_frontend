@@ -98,6 +98,7 @@ const Path = ({ uamData }) => {
             svg
               .append("path")
               .datum(STATIC_PREDICT)
+              .attr("class", "Path-UamPredictLine" + info?.id)
               .attr("fill", "none")
               .attr("stroke", "steelblue")
               .attr("stroke-width", 2)
