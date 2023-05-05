@@ -138,7 +138,13 @@ const Path = ({ uamData }) => {
 
   const resetZoom = () => {
     const svg = d3.select(svgRef.current);
+    svg.call(d3.zoom().on("zoom", null));
     svg.attr("transform", d3.zoomIdentity);
+    const zoom = d3.zoom().on("zoom", null);
+    const initialTransform = d3.zoomIdentity;
+    svg.call(zoom.transform, initialTransform);
+    svg.call(zoom);
+    drawZoom();
   };
 
   useEffect(() => {
@@ -162,6 +168,7 @@ const Path = ({ uamData }) => {
       ])
     );
     drawZoom();
+
     const interval = setInterval(() => {
       updateData();
     }, 1000);
