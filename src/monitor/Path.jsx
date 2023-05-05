@@ -156,6 +156,8 @@ const Path = ({ uamData }) => {
     setScale(
       drawVertport([
         { x: 45, y: 45 },
+        { x: 300, y: 900 },
+        { x: 600, y: 300 },
         { x: 900, y: 700 },
       ])
     );
