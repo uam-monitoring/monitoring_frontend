@@ -18,7 +18,7 @@ const Path = ({ uamData }) => {
     { x: 150, y: 150 },
     { x: 170, y: 170 },
     { x: 190, y: 190 },
-    { x: 500, y: 270 },
+    { x: 600, y: 300 },
   ];
   const updateData = () => {
     const minValue = 0;
@@ -71,9 +71,17 @@ const Path = ({ uamData }) => {
             .append("text")
             .attr("class", "path-uamInfoHover" + vertport.x)
             .attr("x", xScale(vertport.x))
-            .attr("y", yScale(vertport.y))
+            .attr("y", yScale(vertport.y - 30))
             .attr("fill", "white")
-            .text(`ID: ${vertport?.x} Longitude: Latitude: Altitude: `);
+            .selectAll("tspan")
+            .data(["ID: " + vertport?.id])
+            .enter()
+            .append("tspan")
+            .attr("x", xScale(vertport.x))
+            .attr("dy", "1.2em")
+            .text(function (d) {
+              return d;
+            });
         })
         .on("mouseout", function () {
           svg.selectAll(".path-uamInfoHover" + vertport?.x).remove();

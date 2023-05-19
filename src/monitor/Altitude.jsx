@@ -82,7 +82,7 @@ const Altitude = ({ uamData }) => {
     uamData?.map((uam) => {
       makeUamAltitudeLine(data, uam?.id, uam?.color);
     });
-    makeUamAltitudeLine(data1, 131313, "yellow");
+    // makeUamAltitudeLine(data1, 131313, "yellow");
   }, [data]);
 
   useEffect(makeCanvas, []);
