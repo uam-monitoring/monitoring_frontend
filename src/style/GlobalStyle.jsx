@@ -47,6 +47,7 @@ table {
 border-collapse: collapse;
 border-spacing: 0;
 }
+
 body{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height:100%;    
