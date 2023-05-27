@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+import { getVertports } from "../api";
 
 const grayColor = "#8f8f8c";
 const HOVER_INFO_Y = 970;
@@ -61,7 +62,7 @@ const Path = ({ uamData }) => {
     const xScale = d3.scaleLinear().domain([0, 1000]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, 1000]).range([0, height]);
 
-    vertPosition.map((vertport) => {
+    vertPosition?.map((vertport) => {
       vertGroup
         .append("rect")
         .attr("x", xScale(vertport.x))
@@ -239,20 +240,16 @@ const Path = ({ uamData }) => {
 
   useEffect(() => {
     drawZoom();
+    getVertports().then(({ data }) => {
+      setScale(drawVertport(data));
+    });
 
     document.addEventListener("keydown", (event) => {
       if (event.keyCode === 82) {
         resetZoom();
       }
     });
-    setScale(
-      drawVertport([
-        { x: 45, y: 45 },
-        { x: 300, y: 900 },
-        { x: 600, y: 300 },
-        { x: 900, y: 700 },
-      ])
-    );
+
     const interval = setInterval(() => {
       updateData();
     }, 1000);

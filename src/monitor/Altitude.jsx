@@ -25,7 +25,7 @@ const Altitude = ({ uamData }) => {
     const yScale = d3
       .scaleLinear()
       .domain([0, 600])
-      .range([window.innerHeight, 0]);
+      .range([window.innerHeight - 10, 10]);
     let yAxis = svg.select(".y-axis");
     if (yAxis.empty()) {
       yAxis = svg.append("g").attr("class", "y-axis");
@@ -67,11 +67,10 @@ const Altitude = ({ uamData }) => {
         .append("text")
         .append("textPath")
         .attr("href", "#line-path-" + id) // the ID of the path element
-        .attr("startOffset", "5%")
+        .attr("startOffset", "5.5%")
         .attr("text-anchor", "start")
         .attr("font-size", "1rem")
         .attr("fill", "#ffffff")
-        .attr("dy", "30px")
         .text(id);
     } else {
       path.datum(data).attr("d", line);

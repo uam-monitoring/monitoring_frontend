@@ -4,12 +4,15 @@ import reportWebVitals from "./reportWebVitals";
 import GlobalStyle from "./style/GlobalStyle";
 import { RouterProvider } from "react-router";
 import router from "./Router";
+import { RecoilRoot } from "recoil";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <>
-    <GlobalStyle />
-    <RouterProvider router={router} />
+    <RecoilRoot>
+      <GlobalStyle />
+      <RouterProvider router={router} />
+    </RecoilRoot>
   </>
 );
 
