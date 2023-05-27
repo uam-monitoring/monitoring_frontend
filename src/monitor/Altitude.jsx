@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { UamDataState } from "../atom";
 import { colorPicker } from "../utill";
 
 const Altitude = () => {
   const chartRef = useRef(null);
-  const uamData = useRecoilValue(UamDataState);
+  const [uamData, setUamData] = useRecoilState(UamDataState);
   const updateData = (cnt) => {
     const minValue = cnt - 50;
-    const maxValue = cnt + 100;
+    const maxValue = cnt + 50;
     return Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
   };
   const makeCanvas = () => {
@@ -43,10 +43,8 @@ const Altitude = () => {
       .line()
       .x((d, i) => i * (window.innerWidth / (data.length - 1)))
       .y((d) => yScale(d));
-
     const path = svg.select(".line-path-" + id);
     const color = colorPicker(data[0]);
-    console.log(color);
     if (path.empty()) {
       svg
         .append("path")
@@ -74,7 +72,11 @@ const Altitude = () => {
     const interval = setInterval(() => {
       Object?.entries(uamData)?.forEach(([key, value]) => {
         const data = updateData(value.Altitude);
-        makeUamAltitudeLine([data, data], key);
+        const newData = { ...value, Altitude: data };
+        setUamData((prevData) => ({ ...prevData, [key]: newData }));
+        if (value.FIXM !== "") {
+          makeUamAltitudeLine([data, data], key);
+        }
       });
     }, 1000);
     return () => clearInterval(interval);

@@ -1,31 +1,21 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { getVertports } from "../api";
-import { VertportInfoState } from "../atom";
-import { useRecoilState } from "recoil";
+import { UamDataState, VertportInfoState } from "../atom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { colorPicker } from "../utill";
 
 const grayColor = "#8f8f8c";
 const HOVER_INFO_Y = 970;
 const HOVER_INFO_X = 10;
 
-const Path = ({ uamData }) => {
+const Path = () => {
   const svgRef = useRef(null);
   const [scale, setScale] = useState();
+  const uamData = useRecoilValue(UamDataState);
   const [vertportInfo, setVertportInfo] = useRecoilState(VertportInfoState);
   const [data, setData] = useState([{ x: 50, y: 50 }]);
-  const [data1, setData2] = useState([{ x: 600, y: 300 }]);
-  const STATIC_PREDICT = [
-    { x: 50, y: 50 },
-    { x: 70, y: 70 },
-    { x: 90, y: 90 },
-    { x: 110, y: 110 },
-    { x: 130, y: 130 },
-    { x: 150, y: 150 },
-    { x: 170, y: 170 },
-    { x: 190, y: 190 },
-    { x: 120, y: 190 },
-    { x: 600, y: 300 },
-  ];
+
   const updateData = () => {
     const minValue = 0;
     const maxValue = 10;
@@ -34,19 +24,6 @@ const Path = ({ uamData }) => {
       {
         x:
           prevData[prevData.length - 1].x +
-          Math.floor(Math.random() * (maxValue - minValue + 1)) +
-          minValue,
-        y:
-          prevData[prevData.length - 1].y +
-          Math.floor(Math.random() * (maxValue - minValue + 1)) +
-          minValue,
-      },
-    ]);
-    setData2((prevData) => [
-      ...prevData,
-      {
-        x:
-          prevData[prevData.length - 1].x -
           Math.floor(Math.random() * (maxValue - minValue + 1)) +
           minValue,
         y:
@@ -64,7 +41,6 @@ const Path = ({ uamData }) => {
     const height = svg.attr("height");
     const xScale = d3.scaleLinear().domain([0, 1000]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, 1000]).range([0, height]);
-
     vertPosition?.map((vertport) => {
       vertGroup
         .append("rect")
@@ -124,101 +100,110 @@ const Path = ({ uamData }) => {
       .y((d) => scale.yScale(d.y))
       .curve(d3.curveBasis);
 
-    uamData?.map((info, idx) => {
-      const path = svg.select(".path-uam" + info?.id);
-      if (path.empty()) {
-        svg
-          .append("path")
-          .datum(data)
-          .attr("fill", "none")
-          .attr("class", "path-uam" + info?.id)
-          .attr("stroke", info?.color)
-          .attr("stroke-dasharray", "5,5")
-          .attr("stroke-dashoffset", 0)
-          .attr("stroke-width", 2)
-          .attr(
-            "d",
-            line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // apply yScale
-          )
-          .on("mouseover", function () {
-            svg
-              .append("path")
-              .datum(STATIC_PREDICT)
-              .attr("class", "Path-UamPredictLine" + info?.id)
-              .attr("fill", "none")
-              .attr("stroke", "steelblue")
-              .attr("stroke-width", 2)
-              .attr(
-                "d",
-                d3
-                  .line()
-                  .x((d) => scale.xScale(d.x))
-                  .y((d) => scale.yScale(d.y))
-                  .curve(d3.curveCardinal)
-              );
-          })
-          .on("mouseout", function () {
-            svg.selectAll(".Path-UamPredictLine" + info?.id).remove();
-          });
-      } else {
-        path.datum(data).attr(
-          "d",
-          line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // apply yScale
-        );
-      }
+    Object?.entries(uamData)?.forEach(([key, value]) => {
+      const color = colorPicker(value.Altitude);
 
-      const uamInfo = svg.select(".path-uamInfo" + info?.id);
-      if (uamInfo.empty()) {
-        svg
-          .append("circle")
-          .attr("class", "path-uamInfo" + info?.id)
-          .attr("cx", scale.xScale(data[data.length - 1].x))
-          .attr("cy", scale.yScale(data[data.length - 1].y))
-          .attr("r", 7)
-          .attr("fill", info?.color)
-          .on("mouseover", function () {
-            svg
-              .append("path")
-              .datum(STATIC_PREDICT)
-              .attr("class", "Path-UamPredictLine" + info?.id)
-              .attr("fill", "none")
-              .attr("stroke", "steelblue")
-              .attr("stroke-width", 2)
-              .attr(
-                "d",
-                d3
-                  .line()
-                  .x((d) => scale.xScale(d.x))
-                  .y((d) => scale.yScale(d.y))
-                  .curve(d3.curveCardinal)
-              );
-            svg
-              .append("text")
-              .attr("class", "path-uamInfoHover" + info?.id)
-              .attr("x", scale.xScale(HOVER_INFO_X))
-              .attr("y", scale.yScale(HOVER_INFO_Y))
-              .attr("fill", "white")
-              .text(`ID: ${info?.id} Longitude: Latitude: Altitude: `);
-          })
-          .on("mouseout", function () {
-            svg.selectAll(".Path-UamPredictLine" + info?.id).remove();
-            svg.selectAll(".path-uamInfoHover" + info?.id).remove();
-          });
-        svg
-          .append("text")
-          .text(info?.id)
-          .attr("class", "path-uamInfoText" + info?.id)
-          .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
-          .attr("y", scale.yScale(data[data.length - 1].y) - 10) // circle 위치에서 y값 - 10
-          .attr("fill", "black");
-      } else {
-        uamInfo
-          .attr("cx", scale.xScale(data[data.length - 1].x))
-          .attr("cy", scale.yScale(data[data.length - 1].y));
-        svg
-          .select(".path-uamInfoText" + info?.id)
-          .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
-          .attr("y", scale.yScale(data[data.length - 1].y) - 10);
+      if ((value?.FIXM !== "") & (key == "NGDS001")) {
+        console.log(color);
+        const path = svg.select(".path-uam" + key);
+        if (path.empty()) {
+          svg
+            .append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("class", "path-uam" + key)
+            .attr("stroke", color)
+            .attr("stroke-dasharray", "5,5")
+            .attr("stroke-dashoffset", 0)
+            .attr("stroke-width", 2)
+            .attr(
+              "d",
+              line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // apply yScale
+            )
+            .on("mouseover", function () {
+              svg
+                .append("path")
+                .datum(value.FIXM.route)
+                .attr("class", "Path-UamPredictLine" + key)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 2)
+                .attr(
+                  "d",
+                  d3
+                    .line()
+                    .x((d) => scale.xScale(parseInt(d.latitude)))
+                    .y((d) => scale.yScale(parseInt(d.latitude)))
+                    .curve(d3.curveCardinal)
+                );
+            })
+            .on("mouseout", function () {
+              svg.selectAll(".Path-UamPredictLine" + key).remove();
+            });
+        } else {
+          path
+            .datum(data)
+            .attr(
+              "d",
+              line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y))
+            )
+            .attr("stroke", color);
+        }
+
+        const uamInfo = svg.select(".path-uamInfo" + key);
+        if (uamInfo.empty()) {
+          svg
+            .append("circle")
+            .attr("class", "path-uamInfo" + key)
+            .attr("cx", scale.xScale(data[data.length - 1].x))
+            .attr("cy", scale.yScale(data[data.length - 1].y))
+            .attr("r", 7)
+            .attr("fill", color)
+            .on("mouseover", function () {
+              svg
+                .append("path")
+                .datum(value.FIXM.route)
+                .attr("class", "Path-UamPredictLine" + key)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 2)
+                .attr(
+                  "d",
+                  d3
+                    .line()
+                    .x((d) => scale.xScale(parseInt(d.latitude)))
+                    .y((d) => scale.yScale(parseInt(d.latitude)))
+                    .curve(d3.curveCardinal)
+                );
+              svg
+                .append("text")
+                .attr("class", "path-uamInfoHover" + key)
+                .attr("x", scale.xScale(HOVER_INFO_X))
+                .attr("y", scale.yScale(HOVER_INFO_Y))
+                .attr("fill", "white")
+                .text(`ID: ${key} Longitude: Latitude: Altitude: `);
+            })
+            .on("mouseout", function () {
+              svg.selectAll(".Path-UamPredictLine" + key).remove();
+              svg.selectAll(".path-uamInfoHover" + key).remove();
+            });
+          svg
+            .append("text")
+            .text(key)
+            .attr("class", "path-uamInfoText" + key)
+            .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
+            .attr("y", scale.yScale(data[data.length - 1].y) - 10) // circle 위치에서 y값 - 10
+            .attr("fill", "black");
+        } else {
+          uamInfo
+            .attr("cx", scale.xScale(data[data.length - 1].x))
+            .attr("cy", scale.yScale(data[data.length - 1].y))
+            .attr("fill", color);
+          svg
+            .select(".path-uamInfoText" + key)
+            .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
+            .attr("y", scale.yScale(data[data.length - 1].y) - 10);
+        }
       }
     });
   };
@@ -250,7 +235,7 @@ const Path = ({ uamData }) => {
 
   useEffect(() => {
     if (scale) {
-      // drawUamPath();
+      drawUamPath();
     }
   }, [data]);
 
@@ -260,13 +245,11 @@ const Path = ({ uamData }) => {
       setVertportInfo(data);
       setScale(drawVertport(data));
     });
-
     document.addEventListener("keydown", (event) => {
       if (event.keyCode === 82) {
         resetZoom();
       }
     });
-
     const interval = setInterval(() => {
       updateData();
     }, 1000);

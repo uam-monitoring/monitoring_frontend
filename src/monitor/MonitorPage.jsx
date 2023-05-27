@@ -68,7 +68,7 @@ export default function MonitorPage() {
         <Altitude />
       </AltitudeContainer>
       <RouteContainer>
-        <Path uamData={uamData} />
+        <Path />
       </RouteContainer>
     </MonitorContainer>
   );
