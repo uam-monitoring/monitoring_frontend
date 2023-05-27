@@ -2,10 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useRecoilValue } from "recoil";
 import { UamDataState } from "../atom";
+import { colorPicker } from "../utill";
 
 const Altitude = () => {
   const chartRef = useRef(null);
   const uamData = useRecoilValue(UamDataState);
+  const updateData = (cnt) => {
+    const minValue = cnt - 50;
+    const maxValue = cnt + 100;
+    return Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+  };
   const makeCanvas = () => {
     const svg = d3.select(chartRef.current);
     const yScale = d3
@@ -27,7 +33,7 @@ const Altitude = () => {
     yAxis.attr("transform", "translate(40,0)"); // y축 생성
   };
 
-  const makeUamAltitudeLine = (data, id, color) => {
+  const makeUamAltitudeLine = (data, id) => {
     const svg = d3.select(chartRef.current);
     const yScale = d3
       .scaleLinear()
@@ -39,7 +45,8 @@ const Altitude = () => {
       .y((d) => yScale(d));
 
     const path = svg.select(".line-path-" + id);
-
+    const color = colorPicker(data[0]);
+    console.log(color);
     if (path.empty()) {
       svg
         .append("path")
@@ -59,19 +66,19 @@ const Altitude = () => {
         .attr("fill", "#ffffff")
         .text(id);
     } else {
-      path.datum(data).attr("d", line);
+      path.datum(data).attr("stroke", color).attr("d", line);
     }
   };
 
   useEffect(() => {
-    // uamData?.map((uam) => {
-    //   makeUamAltitudeLine(data, uam?.id, uam?.color);
-    // });
-    console.log("ree");
-    Object?.entries(uamData)?.forEach(([key, value]) => {
-      console.log(key, value);
-    });
-  }, [uamData]);
+    const interval = setInterval(() => {
+      Object?.entries(uamData)?.forEach(([key, value]) => {
+        const data = updateData(value.Altitude);
+        makeUamAltitudeLine([data, data], key);
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(makeCanvas, []);
 

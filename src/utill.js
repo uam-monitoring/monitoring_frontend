@@ -3,7 +3,7 @@ export function colorPicker(latitude) {
     FIRST: "red",
     SECOND: "blue",
     THIRD: "green",
-    FOURTH: "yello",
+    FOURTH: "#ffd956",
     FIFTH: "purple",
     SIXTH: "teal",
   };

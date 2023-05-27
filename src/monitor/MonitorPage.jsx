@@ -27,29 +27,30 @@ const RouteContainer = styled.div`
 
 export default function MonitorPage() {
   const [uamData, setUamData] = useRecoilState(UamDataState);
-
   async function setupMonitorSystem() {
-    let obj;
     try {
       const { data } = await getUAMList();
+      let cnt = 100;
       const promises = data?.map(async (item) => {
         const { data: fixmData } = await getFIXM(item);
-        return [item, { FIXM: fixmData, ADSB: [] }];
+        cnt += 100;
+        if (cnt >= 600) {
+          cnt = 100;
+        }
+        return [item, { FIXM: fixmData, ADSB: [], Altitude: cnt }];
       });
       const results = await Promise.all(promises);
-      obj = Object.fromEntries(results);
+      const obj = Object.fromEntries(results);
+      setUamData(obj);
     } catch (error) {
       alert(error);
     }
-    // ADSB에 데이터 넣기 (안해도 될란가)
-    // getADSB().then(({ data }) => {});
     const ws = new WebSocket(`ws://34.64.73.86:8080/socket`);
     ws.onmessage = ({ data }) => {
       const newData = JSON.parse(data);
-      obj[newData.flightIdentifier.uamIdentification].ADSB.push(
-        newData.currentPosition
-      );
-      setUamData(obj);
+      // obj[newData.flightIdentifier.uamIdentification].ADSB.push(
+      //   newData.currentPosition
+      // );
     };
     return () => {
       ws.close();
@@ -66,7 +67,9 @@ export default function MonitorPage() {
       <AltitudeContainer>
         <Altitude />
       </AltitudeContainer>
-      <RouteContainer>{/* <Path uamData={uamData} /> */}</RouteContainer>
+      <RouteContainer>
+        <Path uamData={uamData} />
+      </RouteContainer>
     </MonitorContainer>
   );
 }
