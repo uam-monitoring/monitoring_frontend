@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { getVertports } from "../api";
+import { VertportInfoState } from "../atom";
+import { useRecoilState } from "recoil";
 
 const grayColor = "#8f8f8c";
 const HOVER_INFO_Y = 970;
@@ -9,6 +11,7 @@ const HOVER_INFO_X = 10;
 const Path = ({ uamData }) => {
   const svgRef = useRef(null);
   const [scale, setScale] = useState();
+  const [vertportInfo, setVertportInfo] = useRecoilState(VertportInfoState);
   const [data, setData] = useState([{ x: 50, y: 50 }]);
   const [data1, setData2] = useState([{ x: 600, y: 300 }]);
   const STATIC_PREDICT = [
@@ -242,6 +245,7 @@ const Path = ({ uamData }) => {
   useEffect(() => {
     drawZoom();
     getVertports().then(({ data }) => {
+      setVertportInfo(data);
       setScale(drawVertport(data));
     });
 

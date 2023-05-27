@@ -35,10 +35,10 @@ export default function MonitorPage() {
     initAxiosHeader();
     let c = 0;
     getFIXM("UAL123").then((e) => {
-      // console.log(e);
+      console.log(e);
     });
     getADSB().then(({ data }) => {
-      // console.log(data);
+      console.log(data);
     });
     const ws = new WebSocket(`ws://34.64.73.86:8080/socket`);
     ws.onmessage = ({ data }) => {
