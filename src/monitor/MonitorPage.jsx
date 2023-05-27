@@ -33,16 +33,18 @@ export default function MonitorPage() {
 
   useEffect(() => {
     initAxiosHeader();
+    let c = 0;
     getFIXM("UAL123").then((e) => {
-      console.log(e);
+      // console.log(e);
     });
     getADSB().then(({ data }) => {
-      console.log(data);
+      // console.log(data);
     });
     const ws = new WebSocket(`ws://34.64.73.86:8080/socket`);
     ws.onmessage = ({ data }) => {
       const newData = JSON.parse(data);
-      console.log(newData);
+      console.log(c, newData);
+      c += 1;
       // setData((prevData) => [...prevData, ...newData]);
     };
     return () => {

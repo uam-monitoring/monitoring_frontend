@@ -123,6 +123,7 @@ const Path = ({ uamData }) => {
 
     uamData?.map((info, idx) => {
       const path = svg.select(".path-uam" + info?.id);
+
       if (path.empty()) {
         svg
           .append("path")
