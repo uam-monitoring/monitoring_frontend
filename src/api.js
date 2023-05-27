@@ -6,6 +6,10 @@ export function initAxiosHeader() {
   axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
 }
 
+export async function getUAMList() {
+  const res = await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/uamList`);
+  return res;
+}
 export async function getFIXM(id) {
   const res = await axios.get(
     `${process.env.REACT_APP_API_ENDPOINT}/findFixm?UAMIdentification=${id}`

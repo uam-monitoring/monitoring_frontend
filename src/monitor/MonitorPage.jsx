@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import Altitude from "./Altitude";
 import Path from "./Path";
-import { useEffect } from "react";
-import { getADSB, getFIXM, initAxiosHeader } from "../api";
+import { useEffect, useState } from "react";
+import { getADSB, getFIXM, getUAMList, initAxiosHeader } from "../api";
+import { useRecoilState } from "recoil";
+import { UamDataState } from "../atom";
 
 const MonitorContainer = styled.div`
   width: 100%;
@@ -24,42 +26,47 @@ const RouteContainer = styled.div`
 `;
 
 export default function MonitorPage() {
-  const uamData = [
-    {
-      id: 123123,
-      color: "red",
-    },
-  ];
+  const [uamData, setUamData] = useRecoilState(UamDataState);
 
-  useEffect(() => {
-    initAxiosHeader();
-    let c = 0;
-    getFIXM("UAL123").then((e) => {
-      console.log(e);
-    });
-    getADSB().then(({ data }) => {
-      console.log(data);
-    });
+  async function setupMonitorSystem() {
+    let obj;
+    try {
+      const { data } = await getUAMList();
+      const promises = data?.map(async (item) => {
+        const { data: fixmData } = await getFIXM(item);
+        return [item, { FIXM: fixmData, ADSB: [] }];
+      });
+      const results = await Promise.all(promises);
+      obj = Object.fromEntries(results);
+    } catch (error) {
+      alert(error);
+    }
+    // ADSB에 데이터 넣기 (안해도 될란가)
+    // getADSB().then(({ data }) => {});
     const ws = new WebSocket(`ws://34.64.73.86:8080/socket`);
     ws.onmessage = ({ data }) => {
       const newData = JSON.parse(data);
-      console.log(c, newData);
-      c += 1;
-      // setData((prevData) => [...prevData, ...newData]);
+      obj[newData.flightIdentifier.uamIdentification].ADSB.push(
+        newData.currentPosition
+      );
+      setUamData(obj);
     };
     return () => {
       ws.close();
     };
+  }
+
+  useEffect(() => {
+    initAxiosHeader();
+    setupMonitorSystem();
   }, []);
 
   return (
     <MonitorContainer>
       <AltitudeContainer>
-        <Altitude uamData={uamData} />
+        <Altitude />
       </AltitudeContainer>
-      <RouteContainer>
-        <Path uamData={uamData} />
-      </RouteContainer>
+      <RouteContainer>{/* <Path uamData={uamData} /> */}</RouteContainer>
     </MonitorContainer>
   );
 }

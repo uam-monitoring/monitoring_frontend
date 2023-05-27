@@ -13,10 +13,8 @@ export const VertportInfoState = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const getAdminLoginState = selector({
-  key: "getAdminLoginState",
-  get: ({ get }) => {
-    const data = get(VertportInfoState);
-    return data.state;
-  },
+export const UamDataState = atom({
+  key: "uamInfoState",
+  default: [],
+  effects_UNSTABLE: [persistAtom],
 });

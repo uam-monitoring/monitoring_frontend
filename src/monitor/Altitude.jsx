@@ -1,25 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import { useRecoilValue } from "recoil";
+import { UamDataState } from "../atom";
 
-const Altitude = ({ uamData }) => {
+const Altitude = () => {
   const chartRef = useRef(null);
-  const [data, setData] = useState([220, 220]);
-  const [data1, setData1] = useState([320, 320]);
-  const [flag, setFlag] = useState(false);
-
-  const updateData = (flag) => {
-    const minValue = 220;
-    const maxValue = 290;
-    const newVal =
-      Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
-    setData([newVal, newVal]);
-    const minValue1 = 320;
-    const maxValue1 = 350;
-    const newVal1 =
-      Math.floor(Math.random() * (maxValue1 - minValue1 + 1)) + minValue1;
-    setData1([newVal1, newVal1]);
-  };
-
+  const uamData = useRecoilValue(UamDataState);
   const makeCanvas = () => {
     const svg = d3.select(chartRef.current);
     const yScale = d3
@@ -78,20 +64,16 @@ const Altitude = ({ uamData }) => {
   };
 
   useEffect(() => {
-    uamData?.map((uam) => {
-      makeUamAltitudeLine(data, uam?.id, uam?.color);
+    // uamData?.map((uam) => {
+    //   makeUamAltitudeLine(data, uam?.id, uam?.color);
+    // });
+    console.log("ree");
+    Object?.entries(uamData)?.forEach(([key, value]) => {
+      console.log(key, value);
     });
-  }, [data]);
+  }, [uamData]);
 
   useEffect(makeCanvas, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFlag((prev) => !prev);
-      updateData(flag);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [flag]);
 
   return (
     <svg

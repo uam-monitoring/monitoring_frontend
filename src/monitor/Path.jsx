@@ -126,13 +126,12 @@ const Path = ({ uamData }) => {
 
     uamData?.map((info, idx) => {
       const path = svg.select(".path-uam" + info?.id);
-
       if (path.empty()) {
         svg
           .append("path")
           .datum(data)
           .attr("fill", "none")
-          .attr("class", "path-uam")
+          .attr("class", "path-uam" + info?.id)
           .attr("stroke", info?.color)
           .attr("stroke-dasharray", "5,5")
           .attr("stroke-dashoffset", 0)
@@ -234,6 +233,19 @@ const Path = ({ uamData }) => {
       svg.call(zoom);
       drawZoom();
     }
+  };
+
+  const findLandUam = () => {
+    // vertportInfo();
+    // 새 데이터들을 통해 버티포트랑 겹치는지 판단
+    // 겹치면 uamData목록에서 삭제
+  };
+
+  const deleteUam = (id) => {
+    const svg = d3.select(svgRef.current);
+    svg.selectAll(".Path-UamPredictLine" + id).remove();
+    svg.selectAll(".path-uam" + id).remove();
+    svg.selectAll(".path-uamInfo" + id).remove();
   };
 
   useEffect(() => {
