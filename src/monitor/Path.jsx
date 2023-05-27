@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
+
 const grayColor = "#8f8f8c";
 const HOVER_INFO_Y = 970;
 const HOVER_INFO_X = 10;
@@ -18,6 +19,7 @@ const Path = ({ uamData }) => {
     { x: 150, y: 150 },
     { x: 170, y: 170 },
     { x: 190, y: 190 },
+    { x: 120, y: 190 },
     { x: 600, y: 300 },
   ];
   const updateData = () => {
@@ -58,6 +60,7 @@ const Path = ({ uamData }) => {
     const height = svg.attr("height");
     const xScale = d3.scaleLinear().domain([0, 1000]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, 1000]).range([0, height]);
+
     vertPosition.map((vertport) => {
       vertGroup
         .append("rect")
@@ -214,105 +217,29 @@ const Path = ({ uamData }) => {
           .attr("y", scale.yScale(data[data.length - 1].y) - 10);
       }
     });
-
-    // const path = svg.select(".path-uam" + 131313);
-    // if (path.empty()) {
-    //   svg
-    //     .append("path")
-    //     .datum(data1)
-    //     .attr("fill", "none")
-    //     .attr("class", "path-uam")
-    //     .attr("stroke", "yellow")
-    //     .attr("stroke-dasharray", "5,5")
-    //     .attr("stroke-dashoffset", 0)
-    //     .attr("stroke-width", 2)
-    //     .attr(
-    //       "d",
-    //       line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // apply yScale
-    //     )
-    //     .on("mouseover", function () {
-    //       svg
-    //         .append("path")
-    //         .datum(STATIC_PREDICT)
-    //         .attr("class", "Path-UamPredictLine" + 131313)
-    //         .attr("fill", "none")
-    //         .attr("stroke", "steelblue")
-    //         .attr("stroke-width", 2)
-    //         .attr(
-    //           "d",
-    //           d3
-    //             .line()
-    //             .x((d) => scale.xScale(d.x))
-    //             .y((d) => scale.yScale(d.y))
-    //             .curve(d3.curveCardinal)
-    //         );
-    //     })
-    //     .on("mouseout", function () {
-    //       svg.selectAll(".Path-UamPredictLine" + 131313).remove();
-    //     });
-    // } else {
-    //   path.datum(data1).attr(
-    //     "d",
-    //     line.x((d) => scale.xScale(d.x)).y((d) => scale.yScale(d.y)) // apply yScale
-    //   );
-    // }
-    // const uamInfo = svg.select(".path-uamInfo" + 131313);
-    // if (uamInfo.empty()) {
-    //   svg
-    //     .append("circle")
-    //     .attr("class", "path-uamInfo" + 131313)
-    //     .attr("cx", scale.xScale(data1[data1.length - 1].x))
-    //     .attr("cy", scale.yScale(data1[data1.length - 1].y))
-    //     .attr("r", 5)
-    //     .attr("fill", "yellow")
-    //     .on("mouseover", function () {
-    //       svg
-    //         .append("text")
-    //         .attr("class", "path-uamInfoHover" + 131313)
-    //         .attr("x", scale.xScale(HOVER_INFO_X))
-    //         .attr("y", scale.yScale(HOVER_INFO_Y))
-    //         .attr("fill", "white")
-    //         .text(`ID: 131313 Longitude: Latitude: Altitude: `);
-    //     })
-    //     .on("mouseout", function () {
-    //       svg.selectAll(".path-uamInfoHover" + 131313).remove();
-    //     });
-    //   svg
-    //     .append("text")
-    //     .text(131313)
-    //     .attr("class", "path-uamInfoText" + 131313)
-    //     .attr("x", scale.xScale(data1[data1.length - 1].x) + 10) // circle 위치에서 x값 + 10
-    //     .attr("y", scale.yScale(data1[data1.length - 1].y) - 10) // circle 위치에서 y값 - 10
-    //     .attr("fill", "black");
-    // } else {
-    //   uamInfo
-    //     .attr("cx", scale.xScale(data1[data1.length - 1].x))
-    //     .attr("cy", scale.yScale(data1[data1.length - 1].y));
-    //   svg
-    //     .select(".path-uamInfoText" + 131313)
-    //     .attr("x", scale.xScale(data1[data1.length - 1].x) + 10) // circle 위치에서 x값 + 10
-    //     .attr("y", scale.yScale(data1[data1.length - 1].y) - 10);
-    // }
   };
 
   const resetZoom = () => {
     const svg = d3.select(svgRef.current);
-    svg.attr("transform", d3.zoomIdentity);
-    svg.call(d3.zoom().on("zoom", null));
-    const zoom = d3.zoom().on("zoom", null);
-    svg.call(zoom.transform, d3.zoomIdentity);
-    svg.call(zoom);
-    drawZoom();
+    if (svg) {
+      svg.attr("transform", d3.zoomIdentity);
+      svg.call(d3.zoom().on("zoom", null));
+      const zoom = d3.zoom().on("zoom", null);
+      svg.call(zoom.transform, d3.zoomIdentity);
+      svg.call(zoom);
+      drawZoom();
+    }
   };
 
   useEffect(() => {
     if (scale) {
-      drawUamPath();
+      // drawUamPath();
     }
   }, [data]);
 
   useEffect(() => {
     drawZoom();
+
     document.addEventListener("keydown", (event) => {
       if (event.keyCode === 82) {
         resetZoom();

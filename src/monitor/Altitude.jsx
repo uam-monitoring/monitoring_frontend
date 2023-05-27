@@ -8,8 +8,8 @@ const Altitude = ({ uamData }) => {
   const [flag, setFlag] = useState(false);
 
   const updateData = (flag) => {
-    const minValue = 200;
-    const maxValue = 220;
+    const minValue = 220;
+    const maxValue = 290;
     const newVal =
       Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
     setData([newVal, newVal]);
@@ -82,7 +82,6 @@ const Altitude = ({ uamData }) => {
     uamData?.map((uam) => {
       makeUamAltitudeLine(data, uam?.id, uam?.color);
     });
-    // makeUamAltitudeLine(data1, 131313, "yellow");
   }, [data]);
 
   useEffect(makeCanvas, []);
