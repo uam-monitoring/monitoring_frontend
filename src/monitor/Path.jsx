@@ -44,30 +44,30 @@ const Path = () => {
     vertPosition?.map((vertport) => {
       vertGroup
         .append("rect")
-        .attr("x", xScale(vertport.x))
-        .attr("y", yScale(vertport.y))
+        .attr("x", xScale(vertport.latitude))
+        .attr("y", yScale(vertport.longitude))
         .attr("width", 20)
         .attr("height", 20)
         .attr("fill", grayColor)
         .on("mouseover", function () {
           svg
             .append("text")
-            .attr("class", "path-uamInfoHover" + vertport.x)
-            .attr("x", xScale(vertport.x))
-            .attr("y", yScale(vertport.y - 30))
+            .attr("class", "path-uamInfoHover" + vertport?.id)
+            .attr("x", xScale(vertport.latitude))
+            .attr("y", yScale(vertport.longitude) + 120)
             .attr("fill", "white")
             .selectAll("tspan")
-            .data(["ID: " + vertport?.id])
+            .data([vertport?.name])
             .enter()
             .append("tspan")
-            .attr("x", xScale(vertport.x))
+            .attr("x", xScale(vertport.latitude))
             .attr("dy", "1.2em")
             .text(function (d) {
               return d;
             });
         })
         .on("mouseout", function () {
-          svg.selectAll(".path-uamInfoHover" + vertport?.x).remove();
+          svg.selectAll(".path-uamInfoHover" + vertport?.id).remove();
         });
     });
     return { xScale, yScale };
@@ -104,7 +104,6 @@ const Path = () => {
       const color = colorPicker(value.Altitude);
 
       if ((value?.FIXM !== "") & (key == "NGDS001")) {
-        console.log(color);
         const path = svg.select(".path-uam" + key);
         if (path.empty()) {
           svg

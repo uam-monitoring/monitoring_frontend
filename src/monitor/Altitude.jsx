@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { useRecoilState } from "recoil";
 import { UamDataState } from "../atom";
@@ -80,7 +80,7 @@ const Altitude = () => {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [uamData]);
 
   useEffect(makeCanvas, []);
 

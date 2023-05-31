@@ -33,6 +33,7 @@ export default function MonitorPage() {
       let cnt = 100;
       const promises = data?.map(async (item) => {
         const { data: fixmData } = await getFIXM(item);
+        console.log(fixmData);
         cnt += 100;
         if (cnt >= 600) {
           cnt = 100;
