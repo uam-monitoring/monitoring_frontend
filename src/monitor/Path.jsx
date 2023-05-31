@@ -131,7 +131,7 @@ const Path = () => {
                   "d",
                   d3
                     .line()
-                    .x((d) => scale.xScale(parseInt(d.latitude)))
+                    .x((d) => scale.xScale(parseInt(d.longitude)))
                     .y((d) => scale.yScale(parseInt(d.latitude)))
                     .curve(d3.curveCardinal)
                 );
@@ -170,7 +170,7 @@ const Path = () => {
                   "d",
                   d3
                     .line()
-                    .x((d) => scale.xScale(parseInt(d.latitude)))
+                    .x((d) => scale.xScale(parseInt(d.longitude)))
                     .y((d) => scale.yScale(parseInt(d.latitude)))
                     .curve(d3.curveCardinal)
                 );
