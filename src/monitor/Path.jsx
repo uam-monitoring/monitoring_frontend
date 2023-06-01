@@ -15,7 +15,7 @@ const Path = () => {
   const uamData = useRecoilValue(UamDataState);
   const [vertportInfo, setVertportInfo] = useRecoilState(VertportInfoState);
   const [data, setData] = useState([{ x: 50, y: 50 }]);
-
+  console.log(uamData);
   const updateData = () => {
     const minValue = 0;
     const maxValue = 10;
@@ -44,30 +44,24 @@ const Path = () => {
     vertPosition?.map((vertport) => {
       vertGroup
         .append("rect")
-        .attr("x", xScale(vertport.latitude))
-        .attr("y", yScale(vertport.longitude))
+        .attr("x", xScale(vertport.latitude) - 10)
+        .attr("y", yScale(vertport.longitude) - 10)
         .attr("width", 20)
         .attr("height", 20)
         .attr("fill", grayColor)
         .on("mouseover", function () {
           svg
             .append("text")
-            .attr("class", "path-uamInfoHover" + vertport?.id)
+            .attr("class", "vert-InfoHover" + vertport?.id)
             .attr("x", xScale(vertport.latitude))
-            .attr("y", yScale(vertport.longitude) + 120)
+            .attr("y", yScale(vertport.longitude) - 5)
             .attr("fill", "white")
-            .selectAll("tspan")
-            .data([vertport?.name])
-            .enter()
-            .append("tspan")
-            .attr("x", xScale(vertport.latitude))
-            .attr("dy", "1.2em")
-            .text(function (d) {
-              return d;
-            });
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "top")
+            .text(vertport?.name);
         })
         .on("mouseout", function () {
-          svg.selectAll(".path-uamInfoHover" + vertport?.id).remove();
+          svg.selectAll(".vert-InfoHover" + vertport?.id).remove();
         });
     });
     return { xScale, yScale };
@@ -156,7 +150,7 @@ const Path = () => {
             .attr("class", "path-uamInfo" + key)
             .attr("cx", scale.xScale(data[data.length - 1].x))
             .attr("cy", scale.yScale(data[data.length - 1].y))
-            .attr("r", 7)
+            .attr("r", 9)
             .attr("fill", color)
             .on("mouseover", function () {
               svg
@@ -171,7 +165,7 @@ const Path = () => {
                   d3
                     .line()
                     .x((d) => scale.xScale(parseInt(d.longitude)))
-                    .y((d) => scale.yScale(parseInt(d.latitude)))
+                    .y((d) => scale.yScale(parseInt(d.latitude)) - 9)
                     .curve(d3.curveCardinal)
                 );
               svg
@@ -190,9 +184,11 @@ const Path = () => {
             .append("text")
             .text(key)
             .attr("class", "path-uamInfoText" + key)
-            .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
-            .attr("y", scale.yScale(data[data.length - 1].y) - 10) // circle 위치에서 y값 - 10
-            .attr("fill", "black");
+            .attr("x", scale.xScale(data[data.length - 1].x)) // circle 위치에서 x값 + 10
+            .attr("y", scale.yScale(data[data.length - 1].y)) // circle 위치에서 y값 - 10
+            .attr("fill", "black")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "top");
         } else {
           uamInfo
             .attr("cx", scale.xScale(data[data.length - 1].x))
@@ -200,8 +196,10 @@ const Path = () => {
             .attr("fill", color);
           svg
             .select(".path-uamInfoText" + key)
-            .attr("x", scale.xScale(data[data.length - 1].x) + 10) // circle 위치에서 x값 + 10
-            .attr("y", scale.yScale(data[data.length - 1].y) - 10);
+            .attr("x", scale.xScale(data[data.length - 1].x)) // circle 위치에서 x값 + 10
+            .attr("y", scale.yScale(data[data.length - 1].y) - 9)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "top");
         }
       }
     });
