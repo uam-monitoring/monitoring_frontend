@@ -12,28 +12,57 @@ const HOVER_INFO_X = 10;
 const Path = () => {
   const svgRef = useRef(null);
   const [scale, setScale] = useState();
-  const uamData = useRecoilValue(UamDataState);
   const [vertportInfo, setVertportInfo] = useRecoilState(VertportInfoState);
-  const [data, setData] = useState([{ x: 50, y: 50 }]);
-  console.log(uamData);
+  const uamDataSet = useRecoilValue(UamDataState);
+  const [uamData, setUamData] = useState(uamDataSet);
+  const [flag, setFlag] = useState(false);
   const updateData = () => {
-    const minValue = 0;
-    const maxValue = 10;
-    setData((prevData) => [
-      ...prevData,
+    setFlag((prev) => !prev);
+  };
+  const updatePath = (prev, initVal, lastVal) => {
+    let minY = -5;
+    let maxY = 0;
+    let minX = -5;
+    let maxX = 0;
+    if (initVal.latitude - lastVal.latitude < 0) {
+      minY = 0;
+      maxY = 5;
+    }
+    if (initVal.longitude - lastVal.longitude < 0) {
+      minX = 0;
+      maxX = 5;
+    }
+    // console.log(initVal, lastVal);
+    if (
+      (lastVal.latitude - initVal.latitude > 0) &
+      (lastVal.latitude - initVal.latitude < 10)
+    ) {
+      minY = -1;
+      maxY = 1;
+    }
+
+    if (prev.length === 0) {
+      return [
+        {
+          x: initVal.longitude,
+          y: initVal.latitude,
+        },
+      ];
+    }
+    return [
+      ...prev,
       {
         x:
-          prevData[prevData.length - 1].x +
-          Math.floor(Math.random() * (maxValue - minValue + 1)) +
-          minValue,
+          prev[prev.length - 1]?.x +
+          Math.floor(Math.random() * (maxX - minX + 1)) +
+          minX,
         y:
-          prevData[prevData.length - 1].y +
-          Math.floor(Math.random() * (maxValue - minValue + 1)) +
-          minValue,
+          prev[prev.length - 1]?.y +
+          Math.floor(Math.random() * (maxY - minY + 1)) +
+          minY,
       },
-    ]);
+    ];
   };
-
   const drawVertport = (vertPosition) => {
     const svg = d3.select(svgRef.current);
     const vertGroup = svg.append("g");
@@ -46,8 +75,8 @@ const Path = () => {
         .append("rect")
         .attr("x", xScale(vertport.latitude) - 10)
         .attr("y", yScale(vertport.longitude) - 10)
-        .attr("width", 20)
-        .attr("height", 20)
+        .attr("width", 18)
+        .attr("height", 18)
         .attr("fill", grayColor)
         .on("mouseover", function () {
           svg
@@ -94,10 +123,17 @@ const Path = () => {
       .y((d) => scale.yScale(d.y))
       .curve(d3.curveBasis);
 
-    Object?.entries(uamData)?.forEach(([key, value]) => {
+    Object?.entries(uamDataSet)?.forEach(([key, value]) => {
       const color = colorPicker(value.Altitude);
 
-      if ((value?.FIXM !== "") & (key == "NGDS001")) {
+      if (value?.FIXM !== "") {
+        const data = updatePath(
+          uamData[key].ADSB,
+          value.FIXM.route[0],
+          value.FIXM.route[value.FIXM.route.length - 1]
+        );
+        const newData = { ...uamData[key], ADSB: data };
+        setUamData((prevData) => ({ ...prevData, [key]: newData }));
         const path = svg.select(".path-uam" + key);
         if (path.empty()) {
           svg
@@ -150,7 +186,7 @@ const Path = () => {
             .attr("class", "path-uamInfo" + key)
             .attr("cx", scale.xScale(data[data.length - 1].x))
             .attr("cy", scale.yScale(data[data.length - 1].y))
-            .attr("r", 9)
+            .attr("r", 7)
             .attr("fill", color)
             .on("mouseover", function () {
               svg
@@ -165,7 +201,7 @@ const Path = () => {
                   d3
                     .line()
                     .x((d) => scale.xScale(parseInt(d.longitude)))
-                    .y((d) => scale.yScale(parseInt(d.latitude)) - 9)
+                    .y((d) => scale.yScale(parseInt(d.latitude)) - 3)
                     .curve(d3.curveCardinal)
                 );
               svg
@@ -234,7 +270,7 @@ const Path = () => {
     if (scale) {
       drawUamPath();
     }
-  }, [data]);
+  }, [flag]);
 
   useEffect(() => {
     drawZoom();

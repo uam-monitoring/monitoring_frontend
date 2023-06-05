@@ -8,7 +8,7 @@ const Altitude = () => {
   const chartRef = useRef(null);
   const [uamData, setUamData] = useRecoilState(UamDataState);
   const updateData = (cnt) => {
-    const minValue = cnt - 20;
+    const minValue = cnt - 5;
     const maxValue = cnt + 10;
     return Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
   };
